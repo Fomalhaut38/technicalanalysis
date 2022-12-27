@@ -91,13 +91,24 @@ df.to_csv('df')
 
 
 dfplot = df.copy()
-fig = go.Figure(data = [go.Candlestick(x = dfplot.index, open = dfplot['Open'], high = dfplot['High'], low = dfplot['Low'], close = dfplot['Close']),
-                        go.Scatter(x = dfplot.index, y = dfplot.EMA40, line = dict(color = 'orange', width = 1), name = 'EMA40'),
-                        go.Scatter(x= dfplot.index, y = bbands['BBU_20_2.5'], line = dict(color = 'red', width = 1), name = 'bolling_up'),
-                        go.Scatter(x = dfplot.index, y = bbands['BBL_20_2.5'], line = dict(color = 'blue', width = 1), name = 'bolling_low')
-                        ])
+fig = make_subplots(rows = 3, cols = 1, print_grid= True ,subplot_titles=('BTC Trend', 'RSI'))
+fig.add_trace(go.Candlestick(x = dfplot.index, open = dfplot['Open'], high = dfplot['High'], low = dfplot['Low'], close = dfplot['Close']), row = 1, col = 1)
+fig.add_trace(go.Scatter(x = dfplot.index, y = dfplot.EMA40, line = dict(color = 'orange', width = 1), name = 'EMA40'), row = 1, col = 1)
+fig.add_trace(go.Scatter(x= dfplot.index, y = bbands['BBU_20_2.5'], line = dict(color = 'red', width = 1), name = 'bolling_up'), row = 1, col = 1)
+fig.add_trace(go.Scatter(x = dfplot.index, y = bbands['BBL_20_2.5'], line = dict(color = 'blue', width = 1), name = 'bolling_low'), row = 1, col = 1)
 
-fig.add_scatter(x = dfplot.index, y = dfplot['pointposbreak'], mode = 'markers', marker = dict(color = 'MediumPurple', size = 5), name = 'Signal')
+fig.add_scatter(x = dfplot.index, y = dfplot['pointposbreak'], mode = 'markers', marker = dict(color = 'MediumPurple', size = 5), name = 'Signal', row = 1, col = 1)
+
+fig.add_trace(go.Scatter(x = dfplot.index, y = dfplot.RSI, line = dict(color = 'red', width = 1 ), name = 'RSI'),
+              row = 2, col = 1)
+fig.add_trace(go.Bar(x = dfplot.index, y = macd.iloc[:,0], name = 'MACD', marker_color='darkgreen'),
+              row = 3, col = 1)
+fig.add_trace(go.Scatter(x = dfplot.index, y = macd.iloc[:,2], line = dict(color = 'olive', width = 1), name = 'MACD-s'),
+              row = 3, col = 1)
+fig.add_trace(go.Scatter(x = dfplot.index, y = macd.iloc[:,1], line = dict(color = 'coral', width = 1), name = 'MACD-h'),
+              row = 3, col = 1)
+
+fig.update_yaxes(range = [0,100], row = 2, col = 1)
 fig.show()
 
 def Signal():
